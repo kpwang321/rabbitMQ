@@ -10,6 +10,8 @@
         <module name="rabbitmq_producer" />
         <module name="spring_rabbitmq_consumer" />
         <module name="spring_rabbitmq_producer" />
+        <module name="springboot_rabbitmq_consumer" />
+        <module name="springboot_rabbitmq_producer" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -17,6 +19,8 @@
       <module name="rabbitmq_producer" target="1.8" />
       <module name="spring_rabbitmq_consumer" target="1.8" />
       <module name="spring_rabbitmq_producer" target="1.8" />
+      <module name="springboot_rabbitmq_consumer" target="1.8" />
+      <module name="springboot_rabbitmq_producer" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
