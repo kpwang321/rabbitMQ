@@ -2,7 +2,9 @@ package com.itheima.test;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +94,78 @@ public class ProducerTest {
 
         }
         //发送消息
+
+    }
+
+    /**
+     * 过期时间
+     *    1.队列统一过期
+     *
+     *    2.单个消息过期
+     * 如果设置了消息的过期时间，也设置了队列的过期时间，以时间短的为准
+     * 队列过期后，会将队列所有消息全部移除
+     * 消息过期后，只有消息在队列顶端，才会判断其是否过期
+     */
+    @Test
+    public void testTtl(){
+        /*for (int i = 0; i <10 ; i++) {
+            rabbitTemplate.convertAndSend("test_exchange_ttl","ttl.me",i+"ttl..........");
+
+        }*/
+        MessagePostProcessor messagePostProcessor=new MessagePostProcessor() {
+            @Override
+            public Message postProcessMessage(Message message) throws AmqpException {
+                //1设置message的信息
+                message.getMessageProperties().setExpiration("5000");//消息的过期时间
+                //2返回该消息
+                return message;
+            }
+        };
+        //消息单独过期
+        //rabbitTemplate.convertAndSend("test_exchange_ttl", "ttl.me","message ttl..........", messagePostProcessor);
+        for (int i = 0; i <10 ; i++) {
+            if (i==5){
+                rabbitTemplate.convertAndSend("test_exchange_ttl", "ttl.me",i+"message ttl..........", messagePostProcessor);
+
+            }else {
+                rabbitTemplate.convertAndSend("test_exchange_ttl", "ttl.me",i+"message ttl..........");
+
+            }
+
+        }
+
+
+    }
+
+    /**
+     * 发送测试死信消息
+     *     1.过期时间
+     *     2.长度限制
+     *     3.消息拒收
+     */
+    @Test
+    public void testDlx(){
+        //1.测试过期时间
+        //rabbitTemplate.convertAndSend("test_exchange_dlx","test.dlx.ssss","我是一条消息，我会成为死信吗");
+        //2.长度限制
+        /*for (int i = 0; i <20 ; i++) {
+            rabbitTemplate.convertAndSend("test_exchange_dlx","test.dlx.ssss",i+"我是一条消息，我会成为死信吗");
+
+        }*/
+        //3.测试消费者拒收
+        rabbitTemplate.convertAndSend("test_exchange_dlx","test.dlx.ssss","我是一条消息，我会成为死信吗");
+
+
+    }
+    @Test
+    public void testDelay() throws InterruptedException {
+        //1发送订单信息。将来是在订单系统中，下单成功后，发送消息
+        rabbitTemplate.convertAndSend("order_exchange","order.msg","订单信息:id=1,time=2020/7/16 17:06:21");
+        //2打印倒计时10秒
+        for (int i = 10; i >0 ; i--) {
+            System.out.println(i+"....");
+            Thread.sleep(1000);
+        }
 
     }
 

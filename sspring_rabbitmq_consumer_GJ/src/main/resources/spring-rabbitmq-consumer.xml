@@ -20,8 +20,13 @@
                                password="${rabbitmq.password}"
                                virtual-host="${rabbitmq.virtual-host}"/>
     <!--定义监听器容器-->
-    <rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual" prefetch="1">
+    <rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual" prefetch="1" >
         <!--<rabbit:listener ref="ackListener" queue-names="test_queue_confirm"/>-->
-        <rabbit:listener ref="qosListener" queue-names="test_queue_confirm"/>
+        <!--<rabbit:listener ref="qosListener" queue-names="test_queue_confirm"/>-->
+        <!--<rabbit:listener ref="dlxListener" queue-names="test_queue_dlx"/>-->
+        <!--延迟队列，监听死信队列-->
+        <rabbit:listener ref="orderListener" queue-names="order_queue_dlx"/>
+
+        <!--<rabbit:listener ref="ttlListener" queue-names="test_queue_ttl"/>-->
     </rabbit:listener-container>
 </beans>
